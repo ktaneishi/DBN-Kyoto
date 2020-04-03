@@ -1,37 +1,33 @@
-DBN-Kyoto (Deep Belief Network for Drug Discovery)
-==================================================
+# DBN-Kyoto (Deep Belief Network for Drug Discovery)
 
-This is a drug discovery workload using Deep Belief Network (DBN) and Deep Neural Network (DNN) model.
-This algorithm is used to predict if the chemical structure of a compound can interact with the protein sequence.
-Deep Learning resolve the bottleneck of exponential increase in the calculation time and memory consumption encountered in SVM algorithm.
+## Introdusion
 
-This implementation were used for the optimization of [Theano by Intel](https://github.com/intel/theano),
-and now this optimization were merged in [Theano](https://github.com/theano/theano).
+DBN-Kyoto is a in-silico drug discovery workload using Deep Belief Network (DBN). This workload, so called _virtual screening_, is used to predict if the chemical structure of a compound can interact with the protein sequence. Deep Learning resolve the bottleneck of exponential increasing of the calculation time and memory consumption which we encountered when we applied SVM algorithm.
 
-The results using this implementation were reported in 
-the paper [_CGBVS-DNN: Prediction of Compound-protein Interactions Based on Deep Learning_, MolInf. 2016.](http://onlinelibrary.wiley.com/doi/10.1002/minf.201600045/abstract).
+This implementation were used for the optimization of [Theano by Intel](https://github.com/intel/theano), and now this optimization were happily merged in original [Theano](https://github.com/theano/theano).
 
-Dependency
-----------
+The academic results using DBN-Kyoto were reported in our paper [CGBVS-DNN: Prediction of Compound-protein Interactions Based on Deep Learning, MolInf. 2016.](http://onlinelibrary.wiley.com/doi/10.1002/minf.201600045/abstract).
 
-- Theano (pip install theano)
+## Dependency
 
-Files
------
+- Theano-1.0 or later.
+
+## Files
 
 - dbn.py
-Definition of Deep Belief Network.
+    Definition of Deep Belief Network.
 
 - main.py
-Main script.
+    Main script.
 
 - benchmark.py
-Benchmark script.
+    Benchmark script.
 
 - cpi.npz  
-Sample data including about 20,000 of compound protein interactions.  
+    Sample data of compound protein interactions (shrinked because of github file size limitation).  
 
-Usage
------
+## Usage
 
-    $ python benchmark.py
+```
+$ python benchmark.py
+```
