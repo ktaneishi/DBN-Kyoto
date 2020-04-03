@@ -14,17 +14,10 @@ The academic results using DBN-Kyoto were reported in our paper, [CGBVS-DNN: Pre
 
 ## Files
 
-- dbn.py
-    Definition of Deep Belief Network.
-
-- main.py
-    Main script.
-
-- benchmark.py
-    Benchmark script.
-
-- cpi.npz  
-    Sample data of compound protein interactions (shrinked because of github file size limitation).  
+- dbn.py - Definition of Deep Belief Network.
+- main.py - Run script.
+- benchmark.py - Benchmark script.
+- cpi.npz - Sample data of compound protein interactions (shrinked because of github file size limitation).  
 
 ## Usage
 
