@@ -1,6 +1,6 @@
 # DBN-Kyoto (Deep Belief Network for Drug Discovery)
 
-## Introdusion
+## Introduction
 
 DBN-Kyoto is an in-silico drug discovery workload using Deep Belief Network (DBN). This workload, so called _virtual screening_, is used to predict whether a chemical compound interacts with a given protein sequence or not. In this case, deep learning method resolve the serious bottleneck of exponential increasing of the calculation time and memory consumption which we encountered when we applied SVM algorithm.
 
