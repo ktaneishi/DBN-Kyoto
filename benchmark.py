@@ -153,7 +153,5 @@ if __name__ == '__main__':
         dataset = sys.argv[1]
     else:
         dataset = 'cpi.npz'
-    if not os.path.exists(dataset):
-        sys.exit('Usage: %s [datafile]\nPlease download sample data from "https://my.syncplicity.com/share/vvks9oqxas1xneg/cpi"' % sys.argv[0])
 
     main(dataset=dataset)

@@ -1,14 +1,12 @@
-from __future__ import print_function, division
-import os
-import sys
+import numpy as np
+import pandas as pd
+import argparse
 import timeit
-
-import numpy
+import sys
+import os
 
 from theano.tensor.shared_randomstreams import RandomStreams
-
 import dbn as deep
-import pandas as pd
 
 def main(finetune_lr=0.1, pretraining_epochs=0,
              pretrain_lr=0.01, k=1, training_epochs=100,
@@ -27,7 +25,7 @@ def main(finetune_lr=0.1, pretraining_epochs=0,
     n_train_batches = train_set_x.get_value(borrow=True).shape[0] // batch_size
 
     # numpy random generator
-    numpy_rng = numpy.random.RandomState(123)
+    numpy_rng = np.random.RandomState(123)
     print('... building the model')
     # construct the Deep Belief Network
     dbn = deep.DBN(numpy_rng=numpy_rng, n_ins=n_in,
@@ -55,7 +53,7 @@ def main(finetune_lr=0.1, pretraining_epochs=0,
                 c.append(pretraining_fns[i](index=batch_index,
                                             lr=pretrain_lr))
             print('Pre-training layer %i, epoch %d, cost ' % (i, epoch), end=' ')
-            print(numpy.mean(c, dtype='float64'))
+            print(np.mean(c, dtype='float64'))
 
     end_time = timeit.default_timer()
     # end-snippet-2
@@ -92,7 +90,7 @@ def main(finetune_lr=0.1, pretraining_epochs=0,
     # Jason changed, pcs, make the test_freq higher is good for performance, especially when the dataset is large.
     test_frequency = n_train_batches
 
-    best_test_loss = numpy.inf
+    best_test_loss = np.inf
     test_score = 0.
     start_time = timeit.default_timer()
 
@@ -100,11 +98,11 @@ def main(finetune_lr=0.1, pretraining_epochs=0,
     epoch = 0
 
     score = []
-    batch_range = numpy.arange(n_train_batches)
+    batch_range = np.arange(n_train_batches)
 
     while (epoch < training_epochs) and (not done_looping):
         epoch = epoch + 1
-        numpy.random.shuffle(batch_range)
+        np.random.shuffle(batch_range)
         for minibatch_index in range(n_train_batches):
 
             train_fn(batch_range[minibatch_index])
@@ -113,7 +111,7 @@ def main(finetune_lr=0.1, pretraining_epochs=0,
             if (iter + 1) % test_frequency == 0:
 
                 test_losses = test_model()
-                this_test_loss = numpy.mean(test_losses, dtype='float64')
+                this_test_loss = np.mean(test_losses, dtype='float64')
                 score.append([epoch,this_test_loss])
                 print('epoch %i, minibatch %i/%i, test error %f %%' % (
                     epoch,
@@ -154,9 +152,8 @@ def main(finetune_lr=0.1, pretraining_epochs=0,
         hidden_layers_sizes[0], len(hidden_layers_sizes)))
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        dataset = sys.argv[1]
-    else:
-        sys.exit('Usage: %s [datafile]' % sys.argv[0])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('datafile', default='cpi.npz', nargs='?')
+    args = parser.parse_args()
 
-    main(dataset=dataset)
+    main(dataset=args.datafile)
