@@ -10,17 +10,15 @@ The academic results using DBN-Kyoto were reported in our paper, [CGBVS-DNN: Pre
 
 ## Requirements
 
-- Theano-1.0 or later.
+- Theano-1.0
 
 ## Files
 
-- dbn.py - Definition of Deep Belief Network.
-- main.py - Run script.
-- benchmark.py - Benchmark script.
-- cpi.npz - Sample data of compound protein interactions (shrinked because of github file size limitation).  
+- main.py - Definition of Deep Belief Network and main run script.
+- cpi.npz - Sample data of compound protein interactions (shrinked for github file size limitation).  
 
 ## Usage
 
 ```
-$ python benchmark.py
+$ python main.py
 ```
