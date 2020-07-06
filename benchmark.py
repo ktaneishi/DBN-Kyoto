@@ -149,9 +149,8 @@ def main(finetune_lr=0.1, pretraining_epochs=0,
           ' ran for %.2fm' % ((end_time - start_time) / 60.), file=sys.stderr)
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        dataset = sys.argv[1]
-    else:
-        dataset = 'cpi.npz'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('datafile', default='cpi.npz', nargs='?')
+    args = parser.parse_args()
 
-    main(dataset=dataset)
+    main(dataset=args.datafile)

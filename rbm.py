@@ -5,25 +5,15 @@ contain hidden variables. Restricted Boltzmann Machines further restrict BMs
 to those without visible-visible and hidden-hidden connections.
 """
 
-from __future__ import print_function
-
+import numpy as np
 import timeit
-
-try:
-    import PIL.Image as Image
-except ImportError:
-    import Image
-
-import numpy
+import os
 
 import theano
 import theano.tensor as T
-import os
-
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 from logistic_sgd import load_data
-
 
 # start-snippet-1
 class RBM(object):
@@ -68,7 +58,7 @@ class RBM(object):
 
         if numpy_rng is None:
             # create a number generator
-            numpy_rng = numpy.random.RandomState(1234)
+            numpy_rng = np.random.RandomState(1234)
 
         if theano_rng is None:
             theano_rng = RandomStreams(numpy_rng.randint(2 ** 30))
@@ -79,10 +69,10 @@ class RBM(object):
             # 4*sqrt(6./(n_hidden+n_visible)) the output of uniform if
             # converted using asarray to dtype theano.config.floatX so
             # that the code is runable on GPU
-            initial_W = numpy.asarray(
+            initial_W = np.asarray(
                 numpy_rng.uniform(
-                    low=-4 * numpy.sqrt(6. / (n_hidden + n_visible)),
-                    high=4 * numpy.sqrt(6. / (n_hidden + n_visible)),
+                    low=-4 * np.sqrt(6. / (n_hidden + n_visible)),
+                    high=4 * np.sqrt(6. / (n_hidden + n_visible)),
                     size=(n_visible, n_hidden)
                 ),
                 dtype=theano.config.floatX
@@ -93,7 +83,7 @@ class RBM(object):
         if hbias is None:
             # create shared variable for hidden units bias
             hbias = theano.shared(
-                value=numpy.zeros(
+                value=np.zeros(
                     n_hidden,
                     dtype=theano.config.floatX
                 ),
@@ -104,7 +94,7 @@ class RBM(object):
         if vbias is None:
             # create shared variable for visible units bias
             vbias = theano.shared(
-                value=numpy.zeros(
+                value=np.zeros(
                     n_visible,
                     dtype=theano.config.floatX
                 ),
@@ -381,6 +371,8 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
     :param n_samples: number of samples to plot for each chain
 
     """
+    import Image
+
     datasets = load_data(dataset)
 
     train_set_x, train_set_y = datasets[0]
@@ -393,12 +385,12 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
     index = T.lscalar()    # index to a [mini]batch
     x = T.matrix('x')  # the data is presented as rasterized images
 
-    rng = numpy.random.RandomState(123)
+    rng = np.random.RandomState(123)
     theano_rng = RandomStreams(rng.randint(2 ** 30))
 
     # initialize storage for the persistent chain (state = hidden
     # layer of chain)
-    persistent_chain = theano.shared(numpy.zeros((batch_size, n_hidden),
+    persistent_chain = theano.shared(np.zeros((batch_size, n_hidden),
                                                  dtype=theano.config.floatX),
                                      borrow=True)
 
@@ -441,7 +433,7 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
         for batch_index in range(n_train_batches):
             mean_cost += [train_rbm(batch_index)]
 
-        print('Training epoch %d, cost is ' % epoch, numpy.mean(mean_cost))
+        print('Training epoch %d, cost is ' % epoch, np.mean(mean_cost))
 
         # Plot filters after each training epoch
         plotting_start = timeit.default_timer()
@@ -473,7 +465,7 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
     # pick random test examples, with which to initialize the persistent chain
     test_idx = rng.randint(number_of_test_samples - n_chains)
     persistent_vis_chain = theano.shared(
-        numpy.asarray(
+        np.asarray(
             test_set_x.get_value(borrow=True)[test_idx:test_idx + n_chains],
             dtype=theano.config.floatX
         )
@@ -518,7 +510,7 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
 
     # create a space to store the image for plotting ( we need to leave
     # room for the tile_spacing as well)
-    image_data = numpy.zeros(
+    image_data = np.zeros(
         (29 * n_samples + 1, 29 * n_chains - 1),
         dtype='uint8'
     )

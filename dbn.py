@@ -1,8 +1,7 @@
-import os
-import sys
+import numpy as np
 import timeit
-
-import numpy
+import sys
+import os
 
 import theano
 import theano.tensor as T
@@ -15,10 +14,10 @@ from DBN import DBN
 
 def load_data(dataset, nfold=5):
     print('... loading data')
-    data = numpy.load(dataset)['data']
+    data = np.load(dataset)['data']
 
-    numpy.random.seed(123)
-    data = numpy.random.permutation(data)
+    np.random.seed(123)
+    data = np.random.permutation(data)
 
     train_set = data[:-int(data.shape[0] / nfold)]
     test_set = data[-int(data.shape[0] / nfold):]
@@ -27,10 +26,10 @@ def load_data(dataset, nfold=5):
         data_x = data_xy[:,:-1]
         data_y = data_xy[:,-1]
         shared_x = theano.shared(
-                numpy.asarray(data_x, dtype=theano.config.floatX),
+                np.asarray(data_x, dtype=theano.config.floatX),
                 borrow=borrow)
         shared_y = theano.shared(
-                numpy.asarray(data_y, dtype=theano.config.floatX),
+                np.asarray(data_y, dtype=theano.config.floatX),
                 borrow=borrow)
 
         return shared_x, T.cast(shared_y, 'int32')
@@ -94,9 +93,9 @@ def build_finetune_functions(self, datasets, batch_size, learning_rate):
 
 def versions():
     versions = (
-            ('Theano', theano.version.version),
-            ('numpy', numpy.version.version),
-            ('Python', sys.version))
+            ('theano', theano.version.version),
+            ('numpy', np.version.version),
+            ('python', sys.version))
     return versions
 
 def show_version():
