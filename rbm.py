@@ -5,17 +5,8 @@ from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 class RBM(object):
     """Restricted Boltzmann Machine (RBM)  """
-    def __init__(
-        self,
-        input=None,
-        n_visible=784,
-        n_hidden=500,
-        W=None,
-        hbias=None,
-        vbias=None,
-        numpy_rng=None,
-        theano_rng=None
-    ):
+    def __init__(self, input=None, n_visible=784, n_hidden=500,
+        W=None, hbias=None, vbias=None, numpy_rng=None, theano_rng=None):
         """
         RBM constructor. Defines the parameters of the model along with
         basic operations for inferring hidden from visible (and vice-versa),

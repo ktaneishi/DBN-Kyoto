@@ -17,8 +17,7 @@ class DBN(object):
     regression layer on top.
     """
 
-    def __init__(self, numpy_rng, theano_rng=None, n_ins=784,
-                 hidden_layers_sizes=[500, 500], n_outs=10):
+    def __init__(self, numpy_rng, n_ins=784, hidden_layers_sizes=[500, 500], n_outs=10):
 
         self.sigmoid_layers = []
         self.rbm_layers = []
@@ -27,8 +26,7 @@ class DBN(object):
 
         assert self.n_layers > 0
 
-        if not theano_rng:
-            theano_rng = MRG_RandomStreams(numpy_rng.randint(2 ** 30))
+        theano_rng = MRG_RandomStreams(numpy_rng.randint(2 ** 30))
 
         # allocate symbolic variables for the data
 
@@ -200,12 +198,8 @@ class DBN(object):
             outputs=self.finetune_cost,
             updates=updates,
             givens={
-                self.x: train_set_x[
-                    index * batch_size: (index + 1) * batch_size
-                ],
-                self.y: train_set_y[
-                    index * batch_size: (index + 1) * batch_size
-                ]
+                self.x: train_set_x[index * batch_size: (index + 1) * batch_size],
+                self.y: train_set_y[index * batch_size: (index + 1) * batch_size]
             }
         )
 
@@ -213,12 +207,8 @@ class DBN(object):
             [index],
             self.errors,
             givens={
-                self.x: test_set_x[
-                    index * batch_size: (index + 1) * batch_size
-                ],
-                self.y: test_set_y[
-                    index * batch_size: (index + 1) * batch_size
-                ]
+                self.x: test_set_x[index * batch_size: (index + 1) * batch_size],
+                self.y: test_set_y[index * batch_size: (index + 1) * batch_size]
             }
         )
 
@@ -226,12 +216,8 @@ class DBN(object):
             [index],
             self.errors,
             givens={
-                self.x: valid_set_x[
-                    index * batch_size: (index + 1) * batch_size
-                ],
-                self.y: valid_set_y[
-                    index * batch_size: (index + 1) * batch_size
-                ]
+                self.x: valid_set_x[index * batch_size: (index + 1) * batch_size],
+                self.y: valid_set_y[index * batch_size: (index + 1) * batch_size]
             }
         )
 

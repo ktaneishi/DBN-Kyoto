@@ -10,7 +10,6 @@ def load_data(dataset, nfold=5):
     print('... loading data')
     data = np.load(dataset)['data']
 
-    np.random.seed(123)
     data = np.random.permutation(data)
 
     train_set = data[:-int(data.shape[0] / nfold)]
@@ -57,12 +56,8 @@ def build_finetune_functions(self, datasets, batch_size, learning_rate):
         outputs=self.finetune_cost,
         updates=updates,
         givens={
-            self.x: train_set_x[
-                index * batch_size: (index + 1) * batch_size
-            ],
-            self.y: train_set_y[
-                index * batch_size: (index + 1) * batch_size
-            ]
+            self.x: train_set_x[index * batch_size: (index + 1) * batch_size],
+            self.y: train_set_y[index * batch_size: (index + 1) * batch_size]
         }
     )
 
@@ -70,12 +65,8 @@ def build_finetune_functions(self, datasets, batch_size, learning_rate):
         [index],
         self.errors,
         givens={
-            self.x: test_set_x[
-                index * batch_size: (index + 1) * batch_size
-            ],
-            self.y: test_set_y[
-                index * batch_size: (index + 1) * batch_size
-            ]
+            self.x: test_set_x[index * batch_size: (index + 1) * batch_size],
+            self.y: test_set_y[index * batch_size: (index + 1) * batch_size]
         }
     )
 
@@ -86,7 +77,7 @@ def build_finetune_functions(self, datasets, batch_size, learning_rate):
     return train_fn, test_score
 
 def main(args):
-    hidden_layers_sizes=[2000,2000,2000]
+    hidden_layers_sizes = [args.nunits] * args.nlayers
 
     datasets = load_data(args.datafile)
 
@@ -101,11 +92,10 @@ def main(args):
 
     # numpy random generator
     numpy_rng = np.random.RandomState(123)
+
     print('... building the model')
     # construct the Deep Belief Network
-    dbn = DBN(numpy_rng=numpy_rng, n_ins=n_in,
-              hidden_layers_sizes=hidden_layers_sizes,
-              n_outs=n_out)
+    dbn = DBN(numpy_rng=numpy_rng, n_ins=n_in, hidden_layers_sizes=hidden_layers_sizes, n_outs=n_out)
 
     #########################
     # PRETRAINING THE MODEL #
@@ -144,19 +134,13 @@ def main(args):
     )
 
     print('... finetuning the model')
-    # early-stopping parameters
-
-    # pcs, make the test_freq higher is good for performance, especially when the dataset is large.
-    test_frequency = n_train_batches
 
     best_test_loss = np.inf
-
+    test_frequency = n_train_batches
     epoch = 0
-
-    score = []
     batch_range = np.arange(n_train_batches)
 
-    while epoch < training_epochs:
+    while epoch < args.training_epochs:
         start_time = timeit.default_timer()
         epoch = epoch + 1
         np.random.shuffle(batch_range)
@@ -166,13 +150,11 @@ def main(args):
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
             if (iter + 1) % test_frequency == 0:
+                print('epoch %i, minibatch %i/%i,' % (epoch, minibatch_index + 1, n_train_batches), end='')
 
                 test_losses = test_model()
                 this_test_loss = np.mean(test_losses, dtype='float64')
-                score.append([epoch, this_test_loss])
-                print('epoch %i, minibatch %i/%i, test error %f %%' % (
-                    epoch, minibatch_index + 1, n_train_batches,
-                    this_test_loss * 100.), end='')
+                print(' test error %5.3f%%' % (this_test_loss * 100.), end='')
 
                 # if we got the best test score until now
                 if this_test_loss < best_test_loss:
@@ -184,17 +166,21 @@ def main(args):
         end_time = timeit.default_timer()
         print(' %5.3f sec' % ((end_time - start_time)))
 
-    print(('Optimization complete with best test score of %f %%, obtained at iteration %i') % (best_test_loss * 100., best_iter + 1))
+    print('Optimization complete with best test score of %5.3f%%,' % (best_test_loss * 100.), end='')
+    print(' obtained at iteration %i' % (best_iter + 1))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--datafile', default='cpi.npz')
-    parser.add_argument('--finetune_lr', default=0.1)
-    parser.add_argument('--pretraining_epochs', default=1)
-    parser.add_argument('--pretrain_lr', default=0.01)
-    parser.add_argument('--k', default=1)
-    parser.add_argument('--training_epochs', default=100)
-    parser.add_argument('--batch_size', default=100)
+    parser.add_argument('--datafile', default='data/cpi.npz')
+    parser.add_argument('--finetune_lr', default=0.1, type=float)
+    parser.add_argument('--pretraining_epochs', default=1, type=int)
+    parser.add_argument('--pretrain_lr', default=0.01, type=float)
+    parser.add_argument('--k', default=1, type=int)
+    parser.add_argument('--training_epochs', default=100, type=int)
+    parser.add_argument('--batch_size', default=100, type=int)
+    parser.add_argument('--nunits', default=2000, type=int)
+    parser.add_argument('--nlayers', default=3, type=int)
     args = parser.parse_args()
 
+    np.random.seed(123)
     main(args=args)
