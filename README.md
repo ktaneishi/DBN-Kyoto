@@ -1,4 +1,4 @@
-# DBN-Kyoto (Deep Belief Network for Drug Discovery)
+# DBN-Kyoto (Deep Belief Network for Predicting Compound-Protein Inteactions)
 
 ## Introduction
 
