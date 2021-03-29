@@ -1,4 +1,4 @@
-# DBN-Kyoto (Deep Belief Network for Predicting Compound-Protein Interactions)
+# Deep Belief Network for Predicting Compound-Protein Interactions
 
 ## Introduction
 
