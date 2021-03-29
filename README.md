@@ -12,10 +12,9 @@ DBN-Koyot was published in [CGBVS-DNN: Prediction of Compound-protein Interactio
 
 - Theano-1.0.5
 
-## Files
+## Dataset
 
-- main.py - Definition of Deep Belief Network and main run script.
-- cpi.npz - Sample data of compound protein interactions (shrinked for github file size limitation).  
+- cpi.npz - Example dataset of compound protein interactions.
 
 ## Usage
 
