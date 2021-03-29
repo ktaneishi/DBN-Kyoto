@@ -8,9 +8,9 @@ This implementation were used for the optimization of [Theano by Intel](https://
 
 DBN-Koyot was published in [CGBVS-DNN: Prediction of Compound-protein Interactions Based on Deep Learning, MolInf. 2016.](http://onlinelibrary.wiley.com/doi/10.1002/minf.201600045/abstract)
 
-## Requirements
+## Environments
 
-- Theano-1.0
+- Theano-1.0.5
 
 ## Files
 
