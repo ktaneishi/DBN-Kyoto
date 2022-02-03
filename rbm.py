@@ -4,10 +4,10 @@ import theano.tensor as T
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 class RBM(object):
-    """Restricted Boltzmann Machine (RBM)  """
+    # Restricted Boltzmann Machine (RBM)
     def __init__(self, input=None, n_visible=784, n_hidden=500,
         W=None, hbias=None, vbias=None, numpy_rng=None, theano_rng=None):
-        """
+        '''
         RBM constructor. Defines the parameters of the model along with
         basic operations for inferring hidden from visible (and vice-versa),
         as well as for performing CD updates.
@@ -29,7 +29,7 @@ class RBM(object):
 
         :param vbias: None for standalone RBMs or a symbolic variable
         pointing to a shared visible units bias
-        """
+        '''
 
         self.n_visible = n_visible
         self.n_hidden = n_hidden
@@ -94,14 +94,15 @@ class RBM(object):
         self.params = [self.W, self.hbias, self.vbias]
 
     def free_energy(self, v_sample):
-        ''' Function to compute the free energy '''
+        # Function to compute the free energy
         wx_b = T.dot(v_sample, self.W) + self.hbias
         vbias_term = T.dot(v_sample, self.vbias)
         hidden_term = T.sum(T.log(1 + T.exp(wx_b)), axis=1)
         return -hidden_term - vbias_term
 
     def propup(self, vis):
-        '''This function propagates the visible units activation upwards to
+        '''
+        This function propagates the visible units activation upwards to
         the hidden units
 
         Note that we return also the pre-sigmoid activation of the
@@ -109,13 +110,14 @@ class RBM(object):
         optimizations, this symbolic variable will be needed to write
         down a more stable computational graph (see details in the
         reconstruction cost function)
-
         '''
         pre_sigmoid_activation = T.dot(vis, self.W) + self.hbias
         return [pre_sigmoid_activation, T.nnet.sigmoid(pre_sigmoid_activation)]
 
     def sample_h_given_v(self, v0_sample):
-        ''' This function infers state of hidden units given visible units '''
+        '''
+        This function infers state of hidden units given visible units
+        '''
         # compute the activation of the hidden units given a sample of
         # the visibles
         pre_sigmoid_h1, h1_mean = self.propup(v0_sample)
@@ -129,7 +131,8 @@ class RBM(object):
         return [pre_sigmoid_h1, h1_mean, h1_sample]
 
     def propdown(self, hid):
-        '''This function propagates the hidden units activation downwards to
+        '''
+        This function propagates the hidden units activation downwards to
         the visible units
 
         Note that we return also the pre_sigmoid_activation of the
@@ -137,13 +140,14 @@ class RBM(object):
         optimizations, this symbolic variable will be needed to write
         down a more stable computational graph (see details in the
         reconstruction cost function)
-
         '''
         pre_sigmoid_activation = T.dot(hid, self.W.T) + self.vbias
         return [pre_sigmoid_activation, T.nnet.sigmoid(pre_sigmoid_activation)]
 
     def sample_v_given_h(self, h0_sample):
-        ''' This function infers state of visible units given hidden units '''
+        '''
+        This function infers state of visible units given hidden units
+        '''
         # compute the activation of the visible given the hidden sample
         pre_sigmoid_v1, v1_mean = self.propdown(h0_sample)
         # get a sample of the visible given their activation
@@ -156,23 +160,28 @@ class RBM(object):
         return [pre_sigmoid_v1, v1_mean, v1_sample]
 
     def gibbs_hvh(self, h0_sample):
-        ''' This function implements one step of Gibbs sampling,
-            starting from the hidden state'''
+        '''
+        This function implements one step of Gibbs sampling,
+        starting from the hidden state
+        '''
         pre_sigmoid_v1, v1_mean, v1_sample = self.sample_v_given_h(h0_sample)
         pre_sigmoid_h1, h1_mean, h1_sample = self.sample_h_given_v(v1_sample)
         return [pre_sigmoid_v1, v1_mean, v1_sample,
                 pre_sigmoid_h1, h1_mean, h1_sample]
 
     def gibbs_vhv(self, v0_sample):
-        ''' This function implements one step of Gibbs sampling,
-            starting from the visible state'''
+        '''
+        This function implements one step of Gibbs sampling,
+        starting from the visible state
+        '''
         pre_sigmoid_h1, h1_mean, h1_sample = self.sample_h_given_v(v0_sample)
         pre_sigmoid_v1, v1_mean, v1_sample = self.sample_v_given_h(h1_sample)
         return [pre_sigmoid_h1, h1_mean, h1_sample,
                 pre_sigmoid_v1, v1_mean, v1_sample]
 
     def get_cost_updates(self, lr=0.1, persistent=None, k=1):
-        """This functions implements one step of CD-k or PCD-k
+        '''
+        This functions implements one step of CD-k or PCD-k
 
         :param lr: learning rate used to train the RBM
 
@@ -186,8 +195,7 @@ class RBM(object):
         dictionary contains the update rules for weights and biases but
         also an update of the shared variable used to store the persistent
         chain, if one is used.
-
-        """
+        '''
 
         # compute positive phase
         pre_sigmoid_ph, ph_mean, ph_sample = self.sample_h_given_v(self.input)
@@ -222,7 +230,7 @@ class RBM(object):
             # 6th output
             outputs_info=[None, None, None, None, None, chain_start],
             n_steps=k,
-            name="gibbs_hvh"
+            name='gibbs_hvh'
         )
         # determine gradients on RBM parameters
         # note that we only need the sample at the end of the chain
@@ -246,13 +254,12 @@ class RBM(object):
             monitoring_cost = self.get_pseudo_likelihood_cost(updates)
         else:
             # reconstruction cross-entropy is a better proxy for CD
-            monitoring_cost = self.get_reconstruction_cost(updates,
-                                                           pre_sigmoid_nvs[-1])
+            monitoring_cost = self.get_reconstruction_cost(updates, pre_sigmoid_nvs[-1])
 
         return monitoring_cost, updates
 
     def get_pseudo_likelihood_cost(self, updates):
-        """Stochastic approximation to the pseudo-likelihood"""
+        # Stochastic approximation to the pseudo-likelihood
 
         # index of bit i in expression p(x_i | x_{\i})
         bit_i_idx = theano.shared(value=0, name='bit_i_idx')
@@ -272,8 +279,7 @@ class RBM(object):
         fe_xi_flip = self.free_energy(xi_flip)
 
         # equivalent to e^(-FE(x_i)) / (e^(-FE(x_i)) + e^(-FE(x_{\i})))
-        cost = T.mean(self.n_visible * T.log(T.nnet.sigmoid(fe_xi_flip -
-                                                            fe_xi)))
+        cost = T.mean(self.n_visible * T.log(T.nnet.sigmoid(fe_xi_flip - fe_xi)))
 
         # increment bit_i_idx % number as part of updates
         updates[bit_i_idx] = (bit_i_idx + 1) % self.n_visible
@@ -281,7 +287,8 @@ class RBM(object):
         return cost
 
     def get_reconstruction_cost(self, updates, pre_sigmoid_nv):
-        """Approximation to the reconstruction error
+        '''
+        Approximation to the reconstruction error
 
         Note that this function requires the pre-sigmoid activation as
         input.  To understand why this is so you need to understand a
@@ -307,8 +314,7 @@ class RBM(object):
         is to get also the pre-sigmoid activation as an output of
         scan, and apply both the log and sigmoid outside scan such
         that Theano can catch and optimize the expression.
-
-        """
+        '''
 
         cross_entropy = T.mean(
             T.sum(

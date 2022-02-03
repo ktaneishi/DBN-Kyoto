@@ -7,7 +7,8 @@ from mlp import HiddenLayer, LogisticRegression
 from rbm import RBM
 
 class DBN(object):
-    """Deep Belief Network
+    '''
+    Deep Belief Network
 
     A deep belief network is obtained by stacking several RBMs on top of each
     other. The hidden layer of the RBM at layer `i` becomes the input of the
@@ -15,7 +16,7 @@ class DBN(object):
     network, and the hidden layer of the last RBM represents the output. When
     used for classification, the DBN is treated as a MLP, by adding a logistic
     regression layer on top.
-    """
+    '''
 
     def __init__(self, numpy_rng, n_ins=784, hidden_layers_sizes=[500, 500], n_outs=10):
 
@@ -107,7 +108,8 @@ class DBN(object):
         self.errors = self.logLayer.errors(self.y)
 
     def pretraining_functions(self, train_set_x, batch_size, k):
-        '''Generates a list of functions, for performing one step of
+        '''
+        Generates a list of functions, for performing one step of
         gradient descent at a given layer. The function will require
         as input the minibatch index, and to train an RBM you just
         need to iterate, calling the corresponding function on all
@@ -155,7 +157,8 @@ class DBN(object):
         return pretrain_fns
 
     def build_finetune_functions(self, datasets, batch_size, learning_rate):
-        '''Generates a function `train` that implements one step of
+        '''
+        Generates a function `train` that implements one step of
         finetuning, a function `validate` that computes the error on a
         batch from the validation set, and a function `test` that
         computes the error on a batch from the testing set

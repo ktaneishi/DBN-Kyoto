@@ -144,13 +144,14 @@ def main(args):
         start_time = timeit.default_timer()
         epoch = epoch + 1
         np.random.shuffle(batch_range)
+
         for minibatch_index in range(n_train_batches):
 
             train_fn(batch_range[minibatch_index])
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
             if (iter + 1) % test_frequency == 0:
-                print('epoch %i, minibatch %i/%i,' % (epoch, minibatch_index + 1, n_train_batches), end='')
+                print('\repoch %i, minibatch %i/%i,' % (epoch, minibatch_index + 1, n_train_batches), end='')
 
                 test_losses = test_model()
                 this_test_loss = np.mean(test_losses, dtype='float64')
@@ -163,8 +164,12 @@ def main(args):
                     best_test_loss = this_test_loss
                     best_iter = iter
 
+
         end_time = timeit.default_timer()
-        print(' %5.3f sec' % ((end_time - start_time)))
+        print(' %5.3f sec' % ((end_time - start_time)), end='')
+
+        if epoch % 10 == 0:
+            print('')
 
     print('Optimization complete with best test score of %5.3f%%,' % (best_test_loss * 100.), end='')
     print(' obtained at iteration %i' % (best_iter + 1))
